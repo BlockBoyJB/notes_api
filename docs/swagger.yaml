@@ -1,0 +1,264 @@
+basePath: /
+definitions:
+  echo.HTTPError:
+    properties:
+      message: {}
+    type: object
+  internal_api_v1.noteCreateInput:
+    properties:
+      text:
+        type: string
+      title:
+        type: string
+    required:
+    - text
+    - title
+    type: object
+  internal_api_v1.noteCreateResponse:
+    properties:
+      note_id:
+        type: integer
+    type: object
+  internal_api_v1.noteListInput:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      sort:
+        type: string
+    type: object
+  internal_api_v1.noteValidateInput:
+    properties:
+      text:
+        type: string
+    required:
+    - text
+    type: object
+  internal_api_v1.signInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_api_v1.signInResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_api_v1.signUpInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  notes_api_internal_service.NoteOutput:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      text:
+        type: string
+      title:
+        type: string
+    type: object
+  notes_api_internal_service.TextError:
+    properties:
+      column:
+        type: integer
+      length:
+        type: integer
+      position:
+        type: integer
+      replacements:
+        items:
+          type: string
+        type: array
+      row:
+        type: integer
+      type:
+        type: string
+      word:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Api for notes tracking
+  title: Api for notes tracking
+  version: "1.0"
+paths:
+  /api/v1/notes/create:
+    post:
+      consumes:
+      - application/json
+      description: Create note
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_v1.noteCreateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_v1.noteCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - JWT: []
+      summary: Create note
+      tags:
+      - note
+  /api/v1/notes/list:
+    get:
+      consumes:
+      - application/json
+      description: Get user list notes
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_v1.noteListInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/notes_api_internal_service.NoteOutput'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - JWT: []
+      summary: Get list notes
+      tags:
+      - note
+  /api/v1/notes/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validate spelling mistakes
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_v1.noteValidateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/notes_api_internal_service.TextError'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - JWT: []
+      summary: Validate note
+      tags:
+      - note
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Sign in to account for getting token
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_v1.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_v1.signInResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Sign in
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Create account
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_v1.signUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Sign up
+      tags:
+      - auth
+securityDefinitions:
+  JWT:
+    description: JWT token
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
